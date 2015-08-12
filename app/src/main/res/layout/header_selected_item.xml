@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_shop_ll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:padding="3dp"
+    android:gravity="center"
+    >
+
+    <ImageView
+        android:id="@+id/item_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="fitStart"
+        android:background="@color/white"
+        android:layout_gravity="center"
+        android:src="@drawable/item_shop"
+        />
+    <me.vinhdo.androidsuppordesign.custom.view.CustomTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Valdeen(TM) Best  Quality Silicone "
+        android:maxLines="2"/>
+    <me.vinhdo.androidsuppordesign.custom.view.CustomTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/red_actionbar"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:text="$4.50"
+        android:maxLines="2"/>
+</LinearLayout>

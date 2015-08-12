@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">AndroidSupporDesign</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="title_activity_tab_layout">TabLayoutActivity</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="action_shop">SHOP</string>
+    <string name="action_sale">SALE</string>
+    <string name="action_store">STORE</string>
+    <string name="action_share">SHARE</string>
+    <string name="action_account">ACCOUNT</string>
+    <string name="title_activity_shop">ShopActivity</string>
+
+    <!-- FONT -->
+    <string name="font_regular">Roboto-Regular.ttf</string>
+    <string name="font_italic">Roboto-Italic.ttf</string>
+    <string name="font_bold">Roboto-Bold.ttf</string>
+    <string name="font_semi_bold"></string>
+    <string name="font_light">Roboto-Light.ttf</string>
+    <string name="font_medium">Roboto-Medium.ttf</string>
+    <string name="title_activity_selected_item">SelectedItemActivity</string>
+</resources>
