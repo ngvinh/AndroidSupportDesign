@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/item_shop_ll"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/item_shop_selector"
@@ -10,23 +10,16 @@
 
     <ImageView
         android:id="@+id/item_img"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="fitStart"
+        android:layout_width="match_parent"
+        android:layout_height="149dp"
         android:background="@color/white"
+        android:scaleType="matrix"
         android:layout_gravity="center"
-        android:src="@drawable/item_shop"
         />
     <me.vinhdo.androidsuppordesign.custom.view.CustomTextView
+        android:id="@+id/name_movie_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Valdeen(TM) Best  Quality Silicone "
-        android:maxLines="2"/>
-    <me.vinhdo.androidsuppordesign.custom.view.CustomTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/red_actionbar"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:text="$4.50"
-        android:maxLines="2"/>
+        android:maxLines="1"/>
 </LinearLayout>

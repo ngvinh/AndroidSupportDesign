@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    >
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:fitsSystemWindows="false">
+
+        <FrameLayout
+            android:id="@+id/player_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/backdrop"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/primary"
+                android:layout_gravity="center" />
+
+        </FrameLayout>
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:background="@android:color/transparent"
+        android:layout_marginTop="-42dp">
+
+        <ImageView
+            android:id="@+id/poster_iv"
+            android:layout_width="90dp"
+            android:layout_height="135dp"
+            android:background="@color/red_actionbar" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/play_btn"
+            android:layout_toRightOf="@+id/poster_iv"
+            android:padding="10dp"
+            android:orientation="vertical"
+            >
+            <me.vinhdo.androidsuppordesign.custom.view.CustomTextView
+                android:id="@+id/title_tv"
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="2001: A Space Odyssey"
+                android:maxLines="3"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                />
+            <me.vinhdo.androidsuppordesign.custom.view.CustomTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/imdb_rate_tv"
+                android:text="Imdb"
+                />
+        </LinearLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/play_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:backgroundTint="@color/red_actionbar"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="right"
+
+            android:src="@drawable/mediacontroller_play" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+        <me.vinhdo.androidsuppordesign.custom.view.CustomTextView
+            android:id="@+id/description_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:textSize="16sp"
+            android:text="A collection of screenshots encompassing some of the most beautiful looking Android apps. Aiming to provide inspiration and insight into Android UI conventions."
+            android:maxLines="3"
+            />
+        <me.vinhdo.androidsuppordesign.custom.view.CustomTextView
+            android:id="@+id/more_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="true"
+            android:textColor="@color/red_actionbar"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:textStyle="bold"
+            android:text="Xem thêm"
+            />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/gray"
+        />
+
+    <me.vinhdo.androidsuppordesign.custom.view.CustomTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="true"
+        android:textColor="@color/primary"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
+        android:text="Danh sách tập"
+        />
+
+    <me.vinhdo.androidsuppordesign.custom.view.StaticGridView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tapphim_gv"
+        android:numColumns="auto_fit"
+        ></me.vinhdo.androidsuppordesign.custom.view.StaticGridView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/gray"
+        />
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/recycler_view"
+        >
+
+    </android.support.v7.widget.RecyclerView>
+</LinearLayout>
+</ScrollView>

@@ -42,6 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
+                android:clickable="false"
                 android:background="@drawable/bt_login_fb" />
 
             <me.vinhdo.androidsuppordesign.custom.view.SAutoBgImageButton

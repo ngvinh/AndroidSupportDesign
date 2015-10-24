@@ -2,14 +2,9 @@ package me.vinhdo.androidsuppordesign.activities;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import com.bartoszlipinski.recyclerviewheader.RecyclerViewHeader;
@@ -17,10 +12,9 @@ import com.bartoszlipinski.recyclerviewheader.RecyclerViewHeader;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import me.vinhdo.androidsuppordesign.R;
-import me.vinhdo.androidsuppordesign.adapter.AdapterRView;
 import me.vinhdo.androidsuppordesign.adapter.ItemShopAdapter;
-import me.vinhdo.androidsuppordesign.custom.view.GridDividerDecoration;
 import me.vinhdo.androidsuppordesign.custom.view.InsetDecoration;
+import me.vinhdo.androidsuppordesign.models.MovieModel;
 
 public class ShopActivity extends BaseActivty {
 
@@ -55,10 +49,10 @@ public class ShopActivity extends BaseActivty {
 //        mRecyclerView.addView(v);
         mRecyclerView.setAdapter(new ItemShopAdapter(new ItemShopAdapter.ItemShopListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v, MovieModel movie) {
                 startActivity(new Intent(ShopActivity.this, SelectedItemActivity.class));
             }
-        }));
+        }, null));
         RecyclerViewHeader header = RecyclerViewHeader.fromXml(this, R.layout.header_list_shop_activity);
         header.attachTo(mRecyclerView);
     }

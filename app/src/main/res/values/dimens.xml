@@ -3,4 +3,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="card_insets">1dp</dimen>
+    <dimen name="player_time">60dp</dimen>
+    <dimen name="progress_thumb_size">3dp</dimen>
 </resources>
