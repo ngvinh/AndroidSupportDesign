@@ -69,4 +69,8 @@ public class RestClient {
     public static void getLinkPlay(String url, TextHttpResponseHandler responseHandler){
         LoopjRestClient.get(url, null, responseHandler);
     }
+
+    public static void getSubFile(String url, TextHttpResponseHandler responseHandler){
+        LoopjRestClient.get(url,null, responseHandler);
+    }
 }

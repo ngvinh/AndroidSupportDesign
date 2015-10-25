@@ -6,6 +6,10 @@ import com.google.gson.GsonBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import me.vinhdo.androidsuppordesign.AppApplication;
 import me.vinhdo.androidsuppordesign.R;
 import me.vinhdo.androidsuppordesign.config.ApiConfig;
@@ -14,6 +18,8 @@ import me.vinhdo.androidsuppordesign.models.HomePageMovies;
 import me.vinhdo.androidsuppordesign.models.MovieDetail;
 import me.vinhdo.androidsuppordesign.models.MoviePlay;
 import me.vinhdo.androidsuppordesign.models.ResponseModel;
+import me.vinhdo.androidsuppordesign.models.Sub;
+import me.vinhdo.androidsuppordesign.utils.Log;
 
 /**
  * Created by vinh on 10/8/15.
@@ -79,5 +85,22 @@ public class JSONConvert {
 
     public static MoviePlay getMoviePlay(String data){
         return mGson.fromJson(data, MoviePlay.class);
+    }
+
+    public static List<Sub> getSubs(String data){
+        List<Sub> subs = new ArrayList<>();
+        String nl = "\\n\\d{1,5}\\r";
+        String sp = "[ \\t]*";
+//        Pattern pattern = Pattern.compile("(?s)(\\d+)" + sp + nl + "(\\d{1,2}):(\\d\\d):(\\d\\d),(\\d\\d\\d)" + sp + "-->" + sp + "(\\d\\d):(\\d\\d):(\\d\\d),(\\d\\d\\d)" + sp + "(X1:\\d.*?)??" + nl + "(.*?)" + nl + nl);
+        Pattern pattern = Pattern.compile(nl);
+        String[] lines = data.split(nl);
+        lines[0] = lines[0].substring(2);
+        Log.d("LINES " + lines.length);
+        for(int i = 0; i < lines.length; i++){
+            String[] dd = lines[i].split("\\r\\n",2);
+            Sub s = new Sub(i + 1,dd[0].trim(),dd[1].trim());
+            subs.add(s);
+        }
+        return subs;
     }
 }

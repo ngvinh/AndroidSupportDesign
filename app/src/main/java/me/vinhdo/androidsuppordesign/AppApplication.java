@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 
+import me.vinhdo.androidsuppordesign.config.Key;
 import me.vinhdo.androidsuppordesign.models.HDVConfig;
 
 /**
@@ -36,5 +37,13 @@ public class AppApplication extends Application{
 
     public static String getToken(){
         return PreferenceManager.getDefaultSharedPreferences(instance).getString("token", "");
+    }
+
+    public static void setSubType(int type){
+        PreferenceManager.getDefaultSharedPreferences(instance).edit().putInt("sub_type", type).commit();
+    }
+
+    public static int getSubType(){
+        return PreferenceManager.getDefaultSharedPreferences(instance).getInt("sub_type", Key.SUB_VI);
     }
 }

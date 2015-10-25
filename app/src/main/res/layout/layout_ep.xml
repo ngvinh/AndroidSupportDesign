@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:gravity="bottom"
+    android:layout_gravity="bottom"
+    android:background="@color/transparent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/player_overlay_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@color/primary"
+        android:gravity="center_vertical"
+        android:minHeight="?actionBarSize"
+        android:paddingLeft="15dp"
+        android:paddingRight="5dp"
+        android:visibility="visible">
+
+
+        <ImageView
+            android:id="@+id/back_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_back_white" />
+
+        <TextView
+            android:id="@+id/player_overlay_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:text="Danh sách tập phim"
+            android:textColor="#ffffff"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <me.vinhdo.androidsuppordesign.custom.view.AutofitRecyclerView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/recycler_view"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:padding="@dimen/item_margin"
+        android:columnWidth="@dimen/column_width"
+        android:clipToPadding="false"/>
+</LinearLayout>

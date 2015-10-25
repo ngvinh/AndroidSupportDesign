@@ -15,4 +15,5 @@
     <color name="divider">#B6B6B6</color>
     <color name="red_actionbar">#ba595b</color>
     <color name="gray">#ededed</color>
+    <color name="black_50">#50000000</color>
 </resources>

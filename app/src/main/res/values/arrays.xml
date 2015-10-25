@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sub_type" >
+        <item>VI</item>
+        <item>EN</item>
+        <item>EN/VI</item>
+        <item>OFF</item>
+    </string-array>
+</resources>

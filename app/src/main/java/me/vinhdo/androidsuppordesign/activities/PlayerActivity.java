@@ -15,11 +15,13 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import java.io.BufferedReader;
@@ -41,15 +43,20 @@ import butterknife.OnClick;
 import cz.msebera.android.httpclient.Header;
 import io.vov.vitamio.MediaPlayer;
 import io.vov.vitamio.widget.VideoView;
+import me.vinhdo.androidsuppordesign.AppApplication;
 import me.vinhdo.androidsuppordesign.R;
 import me.vinhdo.androidsuppordesign.api.loopj.RestClient;
 import me.vinhdo.androidsuppordesign.api.loopj.parse.JSONConvert;
+import me.vinhdo.androidsuppordesign.config.Key;
+import me.vinhdo.androidsuppordesign.listeners.LoadSubListener;
 import me.vinhdo.androidsuppordesign.models.MoviePlay;
 import me.vinhdo.androidsuppordesign.models.Resolution;
 import me.vinhdo.androidsuppordesign.models.ResponseModel;
+import me.vinhdo.androidsuppordesign.models.Sub;
+import me.vinhdo.androidsuppordesign.models.SubModel;
 import me.vinhdo.androidsuppordesign.utils.StringUtil;
 
-public class PlayerActivity extends BaseActivty {
+public class PlayerActivity extends BaseActivty implements LoadSubListener{
 
     @Bind(R.id.player_surface)
     VideoView videoView;
@@ -60,17 +67,26 @@ public class PlayerActivity extends BaseActivty {
     @Bind(R.id.progress_bar)
     ProgressBar progressBar;
     @Bind(R.id.player_container)
-    FrameLayout playerContainer;
+    RelativeLayout playerContainer;
     @Bind(R.id.player_overlay_time)
     TextView curTime;
     @Bind(R.id.player_overlay_length)
     TextView tvLength;
     @Bind(R.id.subtitles_surface)
     TextView subtitleSurface;
+    @Bind(R.id.subtitles_surface_02)
+    TextView subtitleSurface02;
     @Bind(R.id.control_container)
     RelativeLayout controlContainer;
     @Bind(R.id.player_overlay_play)
-    ImageButton mPlayBtn;
+    ImageView mPlayBtn;
+    @Bind(R.id.quality_btn)
+    ImageView mQualityBtn;
+    @Bind(R.id.sub_btn)
+    ImageView mSubBtn;
+
+    private int mSubType;
+    private List<Resolution> mListR;
 
     private boolean mControllerShowingStatus;
     private int mProgress;
@@ -84,6 +100,13 @@ public class PlayerActivity extends BaseActivty {
     private MoviePlay mMoviePlay;
     private int id;
     private int ep;
+    int mLastIDSub;
+    int mCurrentIDSub;
+    private SubModel mSubVI;
+    private SubModel mSubEN;
+    private int subLoaded = 0;
+    private int mCurrentLink = 0;
+    private long mCurrentTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,9 +147,21 @@ public class PlayerActivity extends BaseActivty {
                 ResponseModel responseModel = JSONConvert.getResponse(responseString);
                 if (responseModel.isSuccess()) {
                     mMoviePlay = JSONConvert.getMoviePlay(responseModel.getData());
+                    mSubType = AppApplication.getSubType();
+                    if(mMoviePlay.getSubs() != null) {
+                        mSubVI = mMoviePlay.getSubs().get("VIE");
+                        mSubEN = mMoviePlay.getSubs().get("ENG");
+                    }
+                    if(mSubVI != null)
+                        mMoviePlay.getSubs().get("VIE").loadSub(PlayerActivity.this);
+                    if(mSubEN != null)
+                        mMoviePlay.getSubs().get("ENG").loadSub(PlayerActivity.this);
                     setContentView(R.layout.activity_player);
                     initValue();
                     ButterKnife.bind(PlayerActivity.this);
+                    if(mSubVI == null && mSubEN == null){
+                        mSubBtn.setVisibility(View.GONE);
+                    }
 //                    playMovieQuality();
                     mTitle.setText(mMoviePlay.getName());
                     getLink();
@@ -162,18 +197,18 @@ public class PlayerActivity extends BaseActivty {
                     curTime.setText(StringUtil.makeTimeString(
                             PlayerActivity.this,
                             videoView.getCurrentPosition() / 1000));
+                    mCurrentTime = videoView.getCurrentPosition();
                     tvLength.setText(StringUtil.makeTimeString(
                             PlayerActivity.this,
                             (videoView.getDuration() - videoView
                                     .getCurrentPosition()) / 1000));
                     seekBar.setMax((int) (videoView.getDuration()));
                     seekBar.setProgress((int) videoView.getCurrentPosition());
-                    int i = (int) videoView.getDuration();
-                    int j = StringUtil.getProgressPercentage(
-                            videoView.getBufferPercentage(), i);
-                    seekBar.setSecondaryProgress(j);
+                    if(subLoaded == 2 && mSubType != Key.SUB_OFF) {
+                        playTime((int) videoView.getCurrentPosition());
+                    }
                 }
-                mMessageSeekbar.sendEmptyMessageDelayed(0, 800L);
+                mMessageSeekbar.sendEmptyMessageDelayed(0, 100L);
             }
         };
 
@@ -181,13 +216,13 @@ public class PlayerActivity extends BaseActivty {
     }
 
     @OnClick(R.id.player_overlay_play)
-    public void playBtnClick(ImageButton btn) {
+    public void playBtnClick(ImageView btn) {
         if (!videoView.isPlaying()) {
             videoView.start();
-            mPlayBtn.setBackgroundResource(R.drawable.btn_pause_active);
+            mPlayBtn.setImageResource(R.drawable.ic_pause_yellow);
         } else {
             videoView.pause();
-            mPlayBtn.setBackgroundResource(R.drawable.btn_play_active);
+            mPlayBtn.setImageResource(R.drawable.ic_play_blue);
         }
     }
 
@@ -218,6 +253,11 @@ public class PlayerActivity extends BaseActivty {
 
     }
 
+    @Override
+    public void onFinish(String name) {
+        subLoaded++;
+    }
+
     private class LoadLink extends AsyncTask<Void, Void, List<Resolution>> {
 
         @Override
@@ -242,8 +282,11 @@ public class PlayerActivity extends BaseActivty {
         protected void onPostExecute(List<Resolution> listR) {
             super.onPostExecute(resolutions);
             Log.d("ListSize", listR.size() + "");
-            if (listR.size() > 0)
+            mListR = listR;
+            if (listR.size() > 0) {
                 playMovieQuality(listR.get(listR.size() - 1).url);
+                mCurrentLink = listR.size() - 1;
+            }
         }
     }
 
@@ -253,6 +296,12 @@ public class PlayerActivity extends BaseActivty {
         videoView.setVideoPath(urlLink);
         videoView.requestFocus();
         handler = new Handler();
+        videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                
+            }
+        });
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -276,7 +325,11 @@ public class PlayerActivity extends BaseActivty {
         videoView.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
             @Override
             public void onBufferingUpdate(MediaPlayer mp, int percent) {
-
+                Log.d("Load buffer", "percent : " + percent + " " + videoView.getBufferPercentage());
+                int i = (int) videoView.getDuration();
+                int j = StringUtil.getProgressPercentage(
+                        percent, i);
+//                seekBar.setSecondaryProgress(j);
             }
         });
 
@@ -295,12 +348,16 @@ public class PlayerActivity extends BaseActivty {
                 mMessageSeekbar.sendEmptyMessage(0);
                 mMessageHandler.sendEmptyMessageDelayed(2, 500L);
 //                if (moviesModel.getSubtitleExt() != null) {
-                videoView.addTimedTextSource(mMoviePlay.getSubs().get("VIE").getSource());
+//                if(mMoviePlay.getSubs().get("VIE") != null)
+//                videoView.addTimedTextSource(mMoviePlay.getSubs().get("VIE").getSource());
+//                if(mMoviePlay.getSubs().get("ENG") != null)
+//                videoView.addTimedTextSource(mMoviePlay.getSubs().get("ENG").getSource());
 //                }
                 videoView.setTimedTextShown(true);
                 videoView.start();
+                videoView.seekTo(mCurrentTime);
                 seekBar.setMax((int)mediaPlayer.getDuration());
-                mPlayBtn.setBackgroundResource(R.drawable.btn_pause_active);
+                mPlayBtn.setImageResource(R.drawable.ic_pause_yellow);
 
             }
         });
@@ -314,7 +371,7 @@ public class PlayerActivity extends BaseActivty {
                     @Override
                     public void run() {
                         Log.d("text", text);
-                        subtitleSurface.setText(text);
+                        //subtitleSurface.setText(text);
                     }
                 }, 0);
 
@@ -349,6 +406,44 @@ public class PlayerActivity extends BaseActivty {
             }
         });
 
+    }
+
+    public void playTime(int time){
+        Sub sub = (mSubVI != null) ? mSubVI.getSub(time, mLastIDSub) : (mSubEN != null ? mSubEN.getSub(time, mLastIDSub) : null);
+        if(sub == null) {
+            if(mCurrentIDSub == -1) return;
+            mCurrentIDSub = -1;
+            subtitleSurface.setText("");
+            subtitleSurface.setVisibility(View.GONE);
+            subtitleSurface02.setVisibility(View.GONE);
+            subtitleSurface02.setText("");
+        }else {
+            mCurrentIDSub = sub.getId() - 1;
+//            mSubAdapter.changeCurrentId(mCurrentIDSub);
+//            mSubAdapter.notifyItemChanged(mLastIDSub);
+//            mSubAdapter.notifyItemChanged(mCurrentIDSub);
+//            layoutManager.scrollToPositionWithOffset(mCurrentIDSub,0);
+            if(mCurrentIDSub != mLastIDSub) {
+                if(mSubType == Key.SUB_EN && mSubEN != null){
+                    subtitleSurface.setText(mSubEN.getSubs().get(mCurrentIDSub).getText());
+                    subtitleSurface.setVisibility(View.VISIBLE);
+                    subtitleSurface02.setVisibility(View.GONE);
+                }else if(mSubType == Key.SUB_VIEN && mSubEN != null && mSubVI != null){
+                    subtitleSurface.setText(mSubEN.getSubs().get(mCurrentIDSub).getText());
+                    subtitleSurface02.setText(mSubVI.getSubs().get(mCurrentIDSub).getText());
+                    subtitleSurface.setVisibility(View.VISIBLE);
+                    subtitleSurface02.setVisibility(View.VISIBLE);
+                }else {
+                    subtitleSurface.setText(mSubVI.getSubs().get(mCurrentIDSub).getText());
+                    subtitleSurface02.setText(mSubEN.getSubs().get(mCurrentIDSub).getText());
+                    subtitleSurface.setVisibility(View.VISIBLE);
+                    subtitleSurface02.setVisibility(View.GONE);
+                }
+
+//            mSub02Tv.setText(mSubs.get(1).getSubs().get(mCurrentIDSub).getText());
+                mLastIDSub = mCurrentIDSub;
+            }
+        }
     }
 
     @Override
@@ -388,6 +483,41 @@ public class PlayerActivity extends BaseActivty {
         controlContainer.setVisibility(View.VISIBLE);
         mMessageHandler.sendEmptyMessageDelayed(1, 2000L);
     }
+
+    @OnClick(R.id.sub_btn)
+    public void changeSub(){
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(this);
+        builder.title("Choose subtitle").items(R.array.sub_type).itemsCallbackSingleChoice(mSubType, new MaterialDialog.ListCallbackSingleChoice() {
+
+            @Override
+            public boolean onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                mSubType = i;
+                AppApplication.setSubType(i);
+                if(mSubType == Key.SUB_OFF){
+                    mSubBtn.setBackgroundResource(R.drawable.ic_cc_disable);
+                }else{
+                    mSubBtn.setBackgroundResource(R.drawable.ic_cc);
+                }
+                return true;
+            }
+        }).positiveText(android.R.string.ok).show();
+    }
+
+    @OnClick(R.id.quality_btn)
+    public void qualityChange(){
+        if (mListR.size() > 1) {
+            if(mCurrentLink == mListR.size() - 1) {
+                playMovieQuality(mListR.get(mListR.size() - 2).url);
+                mQualityBtn.setBackgroundResource(R.drawable.ic_hd_disable);
+                mCurrentLink = mListR.size() - 2;
+            }else{
+                playMovieQuality(mListR.get(mListR.size() - 1).url);
+                mQualityBtn.setBackgroundResource(R.drawable.ic_hd_active);
+                mCurrentLink = mListR.size() - 1;
+            }
+        }
+    }
+
 //
 //    @OnClick(R.id.player_overlay_subtitle) void chooseSubtitle(){
 //        MaterialDialog.Builder builder = new MaterialDialog.Builder(this);

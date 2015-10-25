@@ -166,6 +166,7 @@ public class HomeActivity extends BaseActivty implements BaseSliderView.OnSlider
         final ItemShopAdapter adapter = new ItemShopAdapter(new ItemShopAdapter.ItemShopListener() {
             @Override
             public void onClick(View v, MovieModel movie) {
+                if(movie.getId() <= 0) return;
                 Intent i = new Intent(HomeActivity.this, DetailMovieActivity.class);
                 i.putExtra("id", movie.getId());
                 startActivity(i);
