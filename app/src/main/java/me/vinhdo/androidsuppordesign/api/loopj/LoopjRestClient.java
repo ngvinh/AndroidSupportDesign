@@ -5,6 +5,7 @@ import android.content.Context;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
+import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.SyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -79,6 +80,24 @@ public class LoopjRestClient {
             showLogRequest(url, params, null);
             mClient.get(url, params, makeWrapperHandler(url, responseHandler));
         }
+    }
+
+    /**
+     * get request with parameters
+     *
+     * @param url
+     * @param params
+     * @param responseHandler
+     */
+    public static RequestHandle getWithHandle(String url, RequestParams params,
+                                              TextHttpResponseHandler responseHandler) {
+        if (checkNetworkConnected(responseHandler)) {
+            checkSynchronize();
+
+            showLogRequest(url, params, null);
+            return mClient.get(url, params, makeWrapperHandler(url, responseHandler));
+        }
+        return null;
     }
 
     /**

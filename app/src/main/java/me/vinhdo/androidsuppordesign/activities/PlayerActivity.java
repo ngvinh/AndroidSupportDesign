@@ -56,7 +56,7 @@ import me.vinhdo.androidsuppordesign.models.Sub;
 import me.vinhdo.androidsuppordesign.models.SubModel;
 import me.vinhdo.androidsuppordesign.utils.StringUtil;
 
-public class PlayerActivity extends BaseActivty implements LoadSubListener{
+public class PlayerActivity extends BaseActivty implements LoadSubListener {
 
     @Bind(R.id.player_surface)
     VideoView videoView;
@@ -102,6 +102,9 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener{
     private int ep;
     int mLastIDSub;
     int mCurrentIDSub;
+    int mLast02IDSub;
+    int mCurrent02IDSub;
+
     private SubModel mSubVI;
     private SubModel mSubEN;
     private int subLoaded = 0;
@@ -148,18 +151,18 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener{
                 if (responseModel.isSuccess()) {
                     mMoviePlay = JSONConvert.getMoviePlay(responseModel.getData());
                     mSubType = AppApplication.getSubType();
-                    if(mMoviePlay.getSubs() != null) {
+                    if (mMoviePlay.getSubs() != null) {
                         mSubVI = mMoviePlay.getSubs().get("VIE");
                         mSubEN = mMoviePlay.getSubs().get("ENG");
                     }
-                    if(mSubVI != null)
+                    if (mSubVI != null)
                         mMoviePlay.getSubs().get("VIE").loadSub(PlayerActivity.this);
-                    if(mSubEN != null)
+                    if (mSubEN != null)
                         mMoviePlay.getSubs().get("ENG").loadSub(PlayerActivity.this);
                     setContentView(R.layout.activity_player);
                     initValue();
                     ButterKnife.bind(PlayerActivity.this);
-                    if(mSubVI == null && mSubEN == null){
+                    if (mSubVI == null && mSubEN == null) {
                         mSubBtn.setVisibility(View.GONE);
                     }
 //                    playMovieQuality();
@@ -204,7 +207,7 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener{
                                     .getCurrentPosition()) / 1000));
                     seekBar.setMax((int) (videoView.getDuration()));
                     seekBar.setProgress((int) videoView.getCurrentPosition());
-                    if(subLoaded == 2 && mSubType != Key.SUB_OFF) {
+                    if (subLoaded == 2 && mSubType != Key.SUB_OFF) {
                         playTime((int) videoView.getCurrentPosition());
                     }
                 }
@@ -227,7 +230,7 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener{
     }
 
     @OnClick(R.id.back_btn)
-    public void backClick(){
+    public void backClick() {
         finish();
     }
 
@@ -299,14 +302,14 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener{
         videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                
+
             }
         });
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(fromUser){
-                    if(videoView != null){
+                if (fromUser) {
+                    if (videoView != null) {
                         videoView.seekTo(progress);
                     }
                 }
@@ -356,7 +359,7 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener{
                 videoView.setTimedTextShown(true);
                 videoView.start();
                 videoView.seekTo(mCurrentTime);
-                seekBar.setMax((int)mediaPlayer.getDuration());
+                seekBar.setMax((int) mediaPlayer.getDuration());
                 mPlayBtn.setImageResource(R.drawable.ic_pause_yellow);
 
             }
@@ -408,42 +411,80 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener{
 
     }
 
-    public void playTime(int time){
-        Sub sub = (mSubVI != null) ? mSubVI.getSub(time, mLastIDSub) : (mSubEN != null ? mSubEN.getSub(time, mLastIDSub) : null);
-        if(sub == null) {
-            if(mCurrentIDSub == -1) return;
+    public void playTime(int time) {
+        Sub sub = (mSubEN != null) ? mSubEN.getSub(time, mLast02IDSub) : null;
+        Sub sub02 = mSubVI != null ? mSubVI.getSub(time, mLastIDSub) : null;
+        if (sub == null || mSubType == Key.SUB_VI) {
+            if (mCurrentIDSub == -1) return;
             mCurrentIDSub = -1;
             subtitleSurface.setText("");
             subtitleSurface.setVisibility(View.GONE);
-            subtitleSurface02.setVisibility(View.GONE);
-            subtitleSurface02.setText("");
-        }else {
+        } else {
             mCurrentIDSub = sub.getId() - 1;
 //            mSubAdapter.changeCurrentId(mCurrentIDSub);
 //            mSubAdapter.notifyItemChanged(mLastIDSub);
 //            mSubAdapter.notifyItemChanged(mCurrentIDSub);
 //            layoutManager.scrollToPositionWithOffset(mCurrentIDSub,0);
-            if(mCurrentIDSub != mLastIDSub) {
-                if(mSubType == Key.SUB_EN && mSubEN != null){
-                    subtitleSurface.setText(mSubEN.getSubs().get(mCurrentIDSub).getText());
-                    subtitleSurface.setVisibility(View.VISIBLE);
-                    subtitleSurface02.setVisibility(View.GONE);
-                }else if(mSubType == Key.SUB_VIEN && mSubEN != null && mSubVI != null){
-                    subtitleSurface.setText(mSubEN.getSubs().get(mCurrentIDSub).getText());
-                    subtitleSurface02.setText(mSubVI.getSubs().get(mCurrentIDSub).getText());
-                    subtitleSurface.setVisibility(View.VISIBLE);
-                    subtitleSurface02.setVisibility(View.VISIBLE);
-                }else {
-                    subtitleSurface.setText(mSubVI.getSubs().get(mCurrentIDSub).getText());
-                    subtitleSurface02.setText(mSubEN.getSubs().get(mCurrentIDSub).getText());
-                    subtitleSurface.setVisibility(View.VISIBLE);
-                    subtitleSurface02.setVisibility(View.GONE);
-                }
-
+            if (mCurrentIDSub != mLastIDSub) {
+                subtitleSurface.setText(mSubVI.getSubs().get(mCurrentIDSub).getText());
+                subtitleSurface.setVisibility(View.VISIBLE);
 //            mSub02Tv.setText(mSubs.get(1).getSubs().get(mCurrentIDSub).getText());
                 mLastIDSub = mCurrentIDSub;
             }
         }
+        if (sub02 == null || mSubType == Key.SUB_EN) {
+            if (mCurrent02IDSub == -1) return;
+            mCurrent02IDSub = -1;
+            subtitleSurface02.setText("");
+            subtitleSurface02.setVisibility(View.GONE);
+        } else {
+            mCurrent02IDSub = sub02.getId() - 1;
+//            mSubAdapter.changeCurrentId(mCurrentIDSub);
+//            mSubAdapter.notifyItemChanged(mLastIDSub);
+//            mSubAdapter.notifyItemChanged(mCurrentIDSub);
+//            layoutManager.scrollToPositionWithOffset(mCurrentIDSub,0);
+            if (mCurrent02IDSub != mLast02IDSub) {
+                subtitleSurface02.setText(mSubEN.getSubs().get(mCurrent02IDSub).getText());
+                subtitleSurface02.setVisibility(View.VISIBLE);
+//            mSub02Tv.setText(mSubs.get(1).getSubs().get(mCurrentIDSub).getText());
+                mLast02IDSub = mCurrent02IDSub;
+            }
+        }
+
+//        if (sub == null) {
+//            if (mCurrentIDSub == -1) return;
+//            mCurrentIDSub = -1;
+//            subtitleSurface.setText("");
+//            subtitleSurface.setVisibility(View.GONE);
+//            subtitleSurface02.setVisibility(View.GONE);
+//            subtitleSurface02.setText("");
+//        } else {
+//            mCurrentIDSub = sub.getId() - 1;
+////            mSubAdapter.changeCurrentId(mCurrentIDSub);
+////            mSubAdapter.notifyItemChanged(mLastIDSub);
+////            mSubAdapter.notifyItemChanged(mCurrentIDSub);
+////            layoutManager.scrollToPositionWithOffset(mCurrentIDSub,0);
+//            if (mCurrentIDSub != mLastIDSub) {
+//                if (mSubType == Key.SUB_EN && mSubEN != null) {
+//                    subtitleSurface.setText(mSubEN.getSubs().get(mCurrentIDSub).getText());
+//                    subtitleSurface.setVisibility(View.VISIBLE);
+//                    subtitleSurface02.setVisibility(View.GONE);
+//                } else if (mSubType == Key.SUB_VIEN && mSubEN != null && mSubVI != null) {
+//                    subtitleSurface.setText(mSubEN.getSubs().get(mCurrentIDSub).getText());
+//                    subtitleSurface02.setText(mSubVI.getSubs().get(mCurrentIDSub).getText());
+//                    subtitleSurface.setVisibility(View.VISIBLE);
+//                    subtitleSurface02.setVisibility(View.VISIBLE);
+//                } else {
+//                    subtitleSurface.setText(mSubVI.getSubs().get(mCurrentIDSub).getText());
+//                    subtitleSurface02.setText(mSubEN.getSubs().get(mCurrentIDSub).getText());
+//                    subtitleSurface.setVisibility(View.VISIBLE);
+//                    subtitleSurface02.setVisibility(View.GONE);
+//                }
+//
+////            mSub02Tv.setText(mSubs.get(1).getSubs().get(mCurrentIDSub).getText());
+//                mLastIDSub = mCurrentIDSub;
+//            }
+//        }
     }
 
     @Override
@@ -485,7 +526,7 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener{
     }
 
     @OnClick(R.id.sub_btn)
-    public void changeSub(){
+    public void changeSub() {
         MaterialDialog.Builder builder = new MaterialDialog.Builder(this);
         builder.title("Choose subtitle").items(R.array.sub_type).itemsCallbackSingleChoice(mSubType, new MaterialDialog.ListCallbackSingleChoice() {
 
@@ -493,9 +534,9 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener{
             public boolean onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                 mSubType = i;
                 AppApplication.setSubType(i);
-                if(mSubType == Key.SUB_OFF){
+                if (mSubType == Key.SUB_OFF) {
                     mSubBtn.setBackgroundResource(R.drawable.ic_cc_disable);
-                }else{
+                } else {
                     mSubBtn.setBackgroundResource(R.drawable.ic_cc);
                 }
                 return true;
@@ -504,13 +545,13 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener{
     }
 
     @OnClick(R.id.quality_btn)
-    public void qualityChange(){
+    public void qualityChange() {
         if (mListR.size() > 1) {
-            if(mCurrentLink == mListR.size() - 1) {
+            if (mCurrentLink == mListR.size() - 1) {
                 playMovieQuality(mListR.get(mListR.size() - 2).url);
                 mQualityBtn.setBackgroundResource(R.drawable.ic_hd_disable);
                 mCurrentLink = mListR.size() - 2;
-            }else{
+            } else {
                 playMovieQuality(mListR.get(mListR.size() - 1).url);
                 mQualityBtn.setBackgroundResource(R.drawable.ic_hd_active);
                 mCurrentLink = mListR.size() - 1;

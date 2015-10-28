@@ -2,10 +2,12 @@ package me.vinhdo.androidsuppordesign.api.loopj.parse;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -16,6 +18,7 @@ import me.vinhdo.androidsuppordesign.config.ApiConfig;
 import me.vinhdo.androidsuppordesign.models.HDVConfig;
 import me.vinhdo.androidsuppordesign.models.HomePageMovies;
 import me.vinhdo.androidsuppordesign.models.MovieDetail;
+import me.vinhdo.androidsuppordesign.models.MovieModel;
 import me.vinhdo.androidsuppordesign.models.MoviePlay;
 import me.vinhdo.androidsuppordesign.models.ResponseModel;
 import me.vinhdo.androidsuppordesign.models.Sub;
@@ -102,5 +105,10 @@ public class JSONConvert {
             subs.add(s);
         }
         return subs;
+    }
+
+    public static List<MovieModel> getMovies(String data) {
+        Type type = new TypeToken<List<MovieModel>>(){}.getType();
+        return (List<MovieModel>)mGson.fromJson(data, type);
     }
 }

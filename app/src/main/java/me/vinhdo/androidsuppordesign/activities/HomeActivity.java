@@ -81,8 +81,8 @@ public class HomeActivity extends BaseActivty implements BaseSliderView.OnSlider
             mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mDrawerLayout != null)
-                        mDrawerLayout.openDrawer(mNavBar);
+//                    if (mDrawerLayout != null)
+//                        mDrawerLayout.openDrawer(mNavBar);
                 }
             });
             if(mTabLayout != null)

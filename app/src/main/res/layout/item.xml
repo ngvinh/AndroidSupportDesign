@@ -9,4 +9,5 @@
     android:textColor="@color/white"
     android:background="@color/material_blue_grey_950"
     android:gravity="left|center_vertical"
+    android:drawableRight="@drawable/ic_more"
     android:padding="10dp" />

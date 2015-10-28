@@ -3,6 +3,7 @@ package me.vinhdo.androidsuppordesign.api.loopj;
 import android.text.TextUtils;
 
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
+import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
@@ -72,5 +73,12 @@ public class RestClient {
 
     public static void getSubFile(String url, TextHttpResponseHandler responseHandler){
         LoopjRestClient.get(url,null, responseHandler);
+    }
+
+    public static RequestHandle search(String s, TextHttpResponseHandler responseHandler) {
+        RequestParams params = new RequestParams();
+        params.put(ApiConfig.PARAM_KEY,s);
+        params.add(ApiConfig.PARAM_SIGN, AppApplication.getHdvConfig().getSign());
+        return LoopjRestClient.getWithHandle(ApiConfig.getSearchUrl(), params, responseHandler);
     }
 }
