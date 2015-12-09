@@ -30,17 +30,22 @@
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.CoordinatorLayout>
 
-    <android.support.design.widget.NavigationView
+    <me.vinhdo.androidsuppordesign.custom.view.ScrimInsetsScrollView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@drawable/bg_login"
-        app:elevation="1dp"
-        app:headerLayout="@layout/header_menu_layout"
-        app:itemIconTint="@color/white"
-        app:itemTextColor="@color/white"
-        app:menu="@menu/menu_main"
-        app:paddingStart="20dp" />
+        android:fitsSystemWindows="true"
+        app:elevation="1dp">
+        <LinearLayout
+            android:id="@+id/content_nav_ll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+        </LinearLayout>
+    </me.vinhdo.androidsuppordesign.custom.view.ScrimInsetsScrollView>
+
 
 </android.support.v4.widget.DrawerLayout>

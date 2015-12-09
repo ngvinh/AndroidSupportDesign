@@ -7,6 +7,7 @@ import android.os.Message;
 import android.print.PrintAttributes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -119,7 +120,12 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
         } else {
             View decorView = getWindow().getDecorView();
-            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+            int uiOptions =  View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
             decorView.setSystemUiVisibility(uiOptions);
         }
         if (!io.vov.vitamio.LibsChecker.checkVitamioLibs(this))
@@ -172,6 +178,19 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
             }
         });
 
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus && Build.VERSION.SDK_INT >= 16) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);}
     }
 
     private void initValue() {
@@ -350,12 +369,12 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
                 mediaPlayer.setPlaybackSpeed(1.0f);
                 mMessageSeekbar.sendEmptyMessage(0);
                 mMessageHandler.sendEmptyMessageDelayed(2, 500L);
-//                if (moviesModel.getSubtitleExt() != null) {
-//                if(mMoviePlay.getSubs().get("VIE") != null)
-//                videoView.addTimedTextSource(mMoviePlay.getSubs().get("VIE").getSource());
+                if (mMoviePlay.getSubs() != null) {
+                if(mMoviePlay.getSubs().get("VIE") != null)
+                videoView.addTimedTextSource(mMoviePlay.getSubs().get("VIE").getSource());
 //                if(mMoviePlay.getSubs().get("ENG") != null)
 //                videoView.addTimedTextSource(mMoviePlay.getSubs().get("ENG").getSource());
-//                }
+                }
                 videoView.setTimedTextShown(true);
                 videoView.start();
                 videoView.seekTo(mCurrentTime);
@@ -374,7 +393,8 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
                     @Override
                     public void run() {
                         Log.d("text", text);
-                        //subtitleSurface.setText(text);
+                        subtitleSurface.setText(Html.fromHtml(text));
+                        subtitleSurface.setVisibility(View.VISIBLE);
                     }
                 }, 0);
 
@@ -412,44 +432,44 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
     }
 
     public void playTime(int time) {
-        Sub sub = (mSubEN != null) ? mSubEN.getSub(time, mLast02IDSub) : null;
-        Sub sub02 = mSubVI != null ? mSubVI.getSub(time, mLastIDSub) : null;
-        if (sub == null || mSubType == Key.SUB_VI) {
-            if (mCurrentIDSub == -1) return;
-            mCurrentIDSub = -1;
-            subtitleSurface.setText("");
-            subtitleSurface.setVisibility(View.GONE);
-        } else {
-            mCurrentIDSub = sub.getId() - 1;
-//            mSubAdapter.changeCurrentId(mCurrentIDSub);
-//            mSubAdapter.notifyItemChanged(mLastIDSub);
-//            mSubAdapter.notifyItemChanged(mCurrentIDSub);
-//            layoutManager.scrollToPositionWithOffset(mCurrentIDSub,0);
-            if (mCurrentIDSub != mLastIDSub) {
-                subtitleSurface.setText(mSubVI.getSubs().get(mCurrentIDSub).getText());
-                subtitleSurface.setVisibility(View.VISIBLE);
-//            mSub02Tv.setText(mSubs.get(1).getSubs().get(mCurrentIDSub).getText());
-                mLastIDSub = mCurrentIDSub;
-            }
-        }
-        if (sub02 == null || mSubType == Key.SUB_EN) {
-            if (mCurrent02IDSub == -1) return;
-            mCurrent02IDSub = -1;
-            subtitleSurface02.setText("");
-            subtitleSurface02.setVisibility(View.GONE);
-        } else {
-            mCurrent02IDSub = sub02.getId() - 1;
-//            mSubAdapter.changeCurrentId(mCurrentIDSub);
-//            mSubAdapter.notifyItemChanged(mLastIDSub);
-//            mSubAdapter.notifyItemChanged(mCurrentIDSub);
-//            layoutManager.scrollToPositionWithOffset(mCurrentIDSub,0);
-            if (mCurrent02IDSub != mLast02IDSub) {
-                subtitleSurface02.setText(mSubEN.getSubs().get(mCurrent02IDSub).getText());
-                subtitleSurface02.setVisibility(View.VISIBLE);
-//            mSub02Tv.setText(mSubs.get(1).getSubs().get(mCurrentIDSub).getText());
-                mLast02IDSub = mCurrent02IDSub;
-            }
-        }
+//        Sub sub = (mSubEN != null) ? mSubEN.getSub(time, mLast02IDSub) : null;
+//        Sub sub02 = mSubVI != null ? mSubVI.getSub(time, mLastIDSub) : null;
+//        if (sub == null || mSubType == Key.SUB_VI) {
+//            if (mCurrentIDSub == -1) return;
+//            mCurrentIDSub = -1;
+//            subtitleSurface.setText("");
+//            subtitleSurface.setVisibility(View.GONE);
+//        } else {
+//            mCurrentIDSub = sub.getId() - 1;
+////            mSubAdapter.changeCurrentId(mCurrentIDSub);
+////            mSubAdapter.notifyItemChanged(mLastIDSub);
+////            mSubAdapter.notifyItemChanged(mCurrentIDSub);
+////            layoutManager.scrollToPositionWithOffset(mCurrentIDSub,0);
+//            if (mCurrentIDSub != mLastIDSub) {
+//                subtitleSurface.setText(mSubVI.getSubs().get(mCurrentIDSub).getText());
+//                subtitleSurface.setVisibility(View.VISIBLE);
+////            mSub02Tv.setText(mSubs.get(1).getSubs().get(mCurrentIDSub).getText());
+//                mLastIDSub = mCurrentIDSub;
+//            }
+//        }
+//        if (sub02 == null || mSubType == Key.SUB_EN) {
+//            if (mCurrent02IDSub == -1) return;
+//            mCurrent02IDSub = -1;
+//            subtitleSurface02.setText("");
+//            subtitleSurface02.setVisibility(View.GONE);
+//        } else {
+//            mCurrent02IDSub = sub02.getId() - 1;
+////            mSubAdapter.changeCurrentId(mCurrentIDSub);
+////            mSubAdapter.notifyItemChanged(mLastIDSub);
+////            mSubAdapter.notifyItemChanged(mCurrentIDSub);
+////            layoutManager.scrollToPositionWithOffset(mCurrentIDSub,0);
+//            if (mCurrent02IDSub != mLast02IDSub) {
+//                subtitleSurface02.setText(mSubEN.getSubs().get(mCurrent02IDSub).getText());
+//                subtitleSurface02.setVisibility(View.VISIBLE);
+////            mSub02Tv.setText(mSubs.get(1).getSubs().get(mCurrentIDSub).getText());
+//                mLast02IDSub = mCurrent02IDSub;
+//            }
+//        }
 
 //        if (sub == null) {
 //            if (mCurrentIDSub == -1) return;

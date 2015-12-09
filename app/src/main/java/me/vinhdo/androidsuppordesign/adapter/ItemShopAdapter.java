@@ -130,6 +130,7 @@ public class ItemShopAdapter extends RecyclerView.Adapter<ItemShopAdapter.ViewRH
         if(position == 0){
             if(holder.mSliderLayout != null && holder.isSetData) return;
             for(final MovieModel movie : mData.getMoviesBanner()){
+                if(movie.getId() <= 0) continue;
                 TextSliderView textSliderView = new TextSliderView(holder.itemView.getContext());
                 // initialize a SliderLayout
                 textSliderView

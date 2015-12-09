@@ -135,7 +135,6 @@ public class DetailMovieActivity extends BaseActivty {
     @OnClick(R.id.play_btn)
     public void play(){
         Intent i = new Intent(DetailMovieActivity.this, PlayerActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         i.putExtra("id", movieDetail.getId());
         i.putExtra("ep", 0);
         startActivity(i);

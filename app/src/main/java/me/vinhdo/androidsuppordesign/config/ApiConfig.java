@@ -40,4 +40,8 @@ public class ApiConfig {
     public static String getTokenUrl(){
         return AppApplication.getHdvConfig() != null ? AppApplication.getHdvConfig().getLink() + "/token" : "";
     }
+
+    public static String getCateUrl() {
+        return AppApplication.getHdvConfig() != null ? AppApplication.getHdvConfig().getLink() + "/category/menu" : "";
+    }
 }

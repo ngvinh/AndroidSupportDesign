@@ -81,4 +81,16 @@ public class RestClient {
         params.add(ApiConfig.PARAM_SIGN, AppApplication.getHdvConfig().getSign());
         return LoopjRestClient.getWithHandle(ApiConfig.getSearchUrl(), params, responseHandler);
     }
+
+    public static void getListCate(TextHttpResponseHandler responseHandler){
+        RequestParams params = new RequestParams();
+        params.add(ApiConfig.PARAM_SIGN, AppApplication.getHdvConfig().getSign());
+        LoopjRestClient.get(ApiConfig.getCateUrl(), params, responseHandler);
+    }
+
+    public static void getMovieOfCate(String catId, int limit, int offset ,TextHttpResponseHandler responseHandler){
+        RequestParams params = new RequestParams();
+        params.add(ApiConfig.PARAM_SIGN, AppApplication.getHdvConfig().getSign());
+        LoopjRestClient.get(ApiConfig.getCateUrl(), params, responseHandler);
+    }
 }

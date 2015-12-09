@@ -19,14 +19,4 @@
         android:layout_toLeftOf="@+id/shop_btn"
         android:layout_centerVertical="true"
         />
-    <me.vinhdo.androidsuppordesign.custom.view.SAutoBgImageButton
-        android:id="@+id/shop_btn"
-        android:layout_width="25dp"
-        android:layout_height="27dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/ic_shop"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        />
 </RelativeLayout>

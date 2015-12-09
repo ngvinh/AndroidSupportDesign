@@ -10,9 +10,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import me.vinhdo.androidsuppordesign.R;
+import me.vinhdo.androidsuppordesign.custom.view.ScrimInsetsScrollView;
+import me.vinhdo.androidsuppordesign.fragments.MenuSliding;
 
 /**
  * Created by vinh on 8/6/15.
@@ -21,7 +24,8 @@ public abstract class BaseActivty extends AppCompatActivity{
 
     // Primary toolbar and drawer toggle
     protected Toolbar mToolbar;
-    protected NavigationView mNavBar;
+    protected MenuSliding mNavBar;
+    protected LinearLayout mContentNavLl;
     protected DrawerLayout mDrawerLayout;
     protected TabLayout mTabLayout;
     protected BaseActivty mBaseActivity;
@@ -58,8 +62,10 @@ public abstract class BaseActivty extends AppCompatActivity{
     protected void setupNarBar(){
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         if(mDrawerLayout == null) return;
-        mNavBar = (NavigationView) findViewById(R.id.nav_view);
+        mNavBar = new MenuSliding(this);
+        mDrawerLayout.addView(mNavBar);
         if(mNavBar == null) return;
+        mContentNavLl = (LinearLayout)mNavBar.findViewById(R.id.content_nav_ll);
     }
     protected void setupTabLayout(){
         mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
@@ -103,4 +109,12 @@ public abstract class BaseActivty extends AppCompatActivity{
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if(mNavBar != null && mNavBar.isOpened()){
+            mNavBar.closeLayer(true);
+            return;
+        }
+        super.onBackPressed();
+    }
 }

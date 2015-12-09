@@ -32,17 +32,4 @@
         <include layout="@layout/toolbar_actionbar" />
     </android.support.design.widget.CoordinatorLayout>
 
-    <android.support.design.widget.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="@drawable/bg_login"
-        app:elevation="1dp"
-        app:headerLayout="@layout/header_menu_layout"
-        app:itemIconTint="@color/white"
-        app:itemTextColor="@color/white"
-        app:menu="@menu/menu_main"
-        app:paddingStart="20dp" />
-
 </android.support.v4.widget.DrawerLayout>

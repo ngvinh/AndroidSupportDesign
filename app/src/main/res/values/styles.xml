@@ -3,9 +3,28 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
+        <item name="actionBarIconColor">#fff</item>
+        <item name="spinnerBarInsetStart">16dp</item>
+        <item name="popupItemBackground">?android:selectableItemBackground</item>
+        <item name="photoItemForeground">?android:selectableItemBackground</item>
+        <item name="photoItemForegroundBorderless">?android:selectableItemBackground</item>
+
+        <item name="colorPrimary">@color/red_actionbar</item>
+        <item name="colorPrimaryDark">@color/red_actionbar</item>
+        <item name="colorAccent">@color/red_actionbar</item>
+
+        <item name="android:textColorLink">@color/white</item>
+
+        <item name="windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@android:color/white</item>
+
+        <item name="android:borderlessButtonStyle">@style/Widget.AppCompat.Button.Borderless</item>
     </style>
 
-    <style name="ActionBarThemeOverlay" parent="">
+    <style name="ActionBarThemeOverlay" parent="AppTheme">
         <item name="android:textColorPrimary">@color/white</item>
         <item name="colorControlNormal">?actionBarIconColor</item>
         <item name="colorControlHighlight">#3fff</item>

@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import me.vinhdo.androidsuppordesign.AppApplication;
 import me.vinhdo.androidsuppordesign.R;
 import me.vinhdo.androidsuppordesign.config.ApiConfig;
+import me.vinhdo.androidsuppordesign.models.CateModel;
 import me.vinhdo.androidsuppordesign.models.HDVConfig;
 import me.vinhdo.androidsuppordesign.models.HomePageMovies;
 import me.vinhdo.androidsuppordesign.models.MovieDetail;
@@ -110,5 +111,9 @@ public class JSONConvert {
     public static List<MovieModel> getMovies(String data) {
         Type type = new TypeToken<List<MovieModel>>(){}.getType();
         return (List<MovieModel>)mGson.fromJson(data, type);
+    }
+    public static List<CateModel> getListCates(String data) {
+        Type type = new TypeToken<List<CateModel>>(){}.getType();
+        return (List<CateModel>)mGson.fromJson(data, type);
     }
 }
