@@ -34,6 +34,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -87,6 +88,7 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
     ImageView mSubBtn;
 
     private int mSubType;
+    private int mCurrentQuality = 0;
     private List<Resolution> mListR;
 
     private boolean mControllerShowingStatus;
@@ -111,6 +113,8 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
     private int subLoaded = 0;
     private int mCurrentLink = 0;
     private long mCurrentTime = 0;
+    String[] listQuality;
+    String[] listSub;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,7 +124,7 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
         } else {
             View decorView = getWindow().getDecorView();
-            int uiOptions =  View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -190,7 +194,8 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
                             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                             | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);}
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
     }
 
     private void initValue() {
@@ -286,7 +291,18 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
         protected List<Resolution> doInBackground(Void... params) {
             URL url = null;
             try {
-                url = new URL(mMoviePlay.getLinkPlay());
+                String link = mMoviePlay.getLinkPlay();
+                String replace = id + "_320_2000";
+                String place = id + "_(.*)\\d{3,4}_\\d{3,4}";
+                Pattern pattern = Pattern.compile(place);
+                //#EXT-X-STREAM-INF:.*BANDWIDTH=(\\d+).*RESOLUTION=([\\dx]+).*x([\\dx]+).*
+                Matcher matcher = pattern.matcher(link);
+                if (matcher.find()) {
+                    String epe = matcher.group(1);
+                    replace = id + "_" + epe + "320_2000";
+                }
+                link = link.replaceFirst(place, replace);
+                url = new URL(link);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -304,10 +320,22 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
         protected void onPostExecute(List<Resolution> listR) {
             super.onPostExecute(resolutions);
             Log.d("ListSize", listR.size() + "");
+            Collections.reverse(listR);
             mListR = listR;
             if (listR.size() > 0) {
-                playMovieQuality(listR.get(listR.size() - 1).url);
-                mCurrentLink = listR.size() - 1;
+                listQuality = new String[listR.size()];
+                for (int i = 0; i < listR.size(); i++) {
+                    listQuality[i] = listR.get(i).name;
+                }
+                try {
+                    float k = Float.valueOf(mListR.get(mCurrentQuality).name);
+                    if (k >= 720f) {
+                        mQualityBtn.setBackgroundResource(R.drawable.ic_hd_active);
+                    }
+                } catch (NumberFormatException ex) {
+                    mQualityBtn.setBackgroundResource(R.drawable.ic_hd_disable);
+                }
+                playMovieQuality(listR.get(mCurrentQuality).url);
             }
         }
     }
@@ -370,8 +398,8 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
                 mMessageSeekbar.sendEmptyMessage(0);
                 mMessageHandler.sendEmptyMessageDelayed(2, 500L);
                 if (mMoviePlay.getSubs() != null) {
-                if(mMoviePlay.getSubs().get("VIE") != null)
-                videoView.addTimedTextSource(mMoviePlay.getSubs().get("VIE").getSource());
+                    if (mMoviePlay.getSubs().get("VIE") != null)
+                        videoView.addTimedTextSource(mMoviePlay.getSubs().get("VIE").getSource());
 //                if(mMoviePlay.getSubs().get("ENG") != null)
 //                videoView.addTimedTextSource(mMoviePlay.getSubs().get("ENG").getSource());
                 }
@@ -556,8 +584,16 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
                 AppApplication.setSubType(i);
                 if (mSubType == Key.SUB_OFF) {
                     mSubBtn.setBackgroundResource(R.drawable.ic_cc_disable);
+                    videoView.setTimedTextShown(false);
                 } else {
                     mSubBtn.setBackgroundResource(R.drawable.ic_cc);
+                    videoView.setTimedTextShown(true);
+                }
+                if (mMoviePlay.getSubs() != null) {
+                    if (mSubType == Key.SUB_VI && mMoviePlay.getSubs().get("VIE") != null)
+                        videoView.addTimedTextSource(mMoviePlay.getSubs().get("VIE").getSource());
+                    if (mSubType == Key.SUB_EN && mMoviePlay.getSubs().get("ENG") != null)
+                        videoView.addTimedTextSource(mMoviePlay.getSubs().get("ENG").getSource());
                 }
                 return true;
             }
@@ -566,17 +602,40 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
 
     @OnClick(R.id.quality_btn)
     public void qualityChange() {
-        if (mListR.size() > 1) {
-            if (mCurrentLink == mListR.size() - 1) {
-                playMovieQuality(mListR.get(mListR.size() - 2).url);
-                mQualityBtn.setBackgroundResource(R.drawable.ic_hd_disable);
-                mCurrentLink = mListR.size() - 2;
-            } else {
-                playMovieQuality(mListR.get(mListR.size() - 1).url);
-                mQualityBtn.setBackgroundResource(R.drawable.ic_hd_active);
-                mCurrentLink = mListR.size() - 1;
+        if (listQuality == null) return;
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(this);
+        builder.title("Choose Quality").items(listQuality).itemsCallbackSingleChoice(mCurrentQuality, new MaterialDialog.ListCallbackSingleChoice() {
+
+            @Override
+            public boolean onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                if(mCurrentQuality == i) return false;
+                mCurrentQuality = i;
+                try {
+                    float k = Float.valueOf(mListR.get(mCurrentQuality).name);
+                    if (k >= 720f) {
+                        mQualityBtn.setBackgroundResource(R.drawable.ic_hd_active);
+                    }else {
+                        mQualityBtn.setBackgroundResource(R.drawable.ic_hd_disable);
+                    }
+                } catch (NumberFormatException ex) {
+                    mQualityBtn.setBackgroundResource(R.drawable.ic_hd_disable);
+                }
+                playMovieQuality(mListR.get(mCurrentQuality).url);
+                return true;
             }
-        }
+        }).positiveText(android.R.string.ok).show();
+
+//        if (mListR.size() > 1) {
+//            if (mCurrentLink == mListR.size() - 1) {
+//                playMovieQuality(mListR.get(mListR.size() - 2).url);
+//                mQualityBtn.setBackgroundResource(R.drawable.ic_hd_disable);
+//                mCurrentLink = mListR.size() - 2;
+//            } else {
+//                playMovieQuality(mListR.get(mListR.size() - 1).url);
+//                mQualityBtn.setBackgroundResource(R.drawable.ic_hd_active);
+//                mCurrentLink = mListR.size() - 1;
+//            }
+//        }
     }
 
 //
@@ -647,8 +706,8 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
                 if (line.startsWith("#EXT-X-STREAM")) { //start of m3u8
 
                     resolutionModel = new Resolution();
-                    final Pattern pattern = Pattern.compile("^#EXT-X-STREAM-INF:.*BANDWIDTH=(\\d+).*RESOLUTION=([\\dx]+).*");
-
+                    final Pattern pattern = Pattern.compile("#EXT-X-STREAM-INF:.*BANDWIDTH=(\\d+).*RESOLUTION=([\\dx]+).*x([\\dx]+).*");
+                    //#EXT-X-STREAM-INF:.*BANDWIDTH=(\\d+).*RESOLUTION=([\\dx]+).*x([\\dx]+).*
                     Matcher matcher = pattern.matcher(line);
                     String bandwidth = "";
                     String resolution = "";

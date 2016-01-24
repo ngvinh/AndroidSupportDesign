@@ -8,7 +8,7 @@ import me.vinhdo.androidsuppordesign.AppApplication;
 public class ApiConfig {
     public static final String PARAM_TOKEN = "accesstokenkey";
     public static final String PARAM_UID = "uid";
-    public static String API_CONFIG_BASE_URL = "http://vinhdo.me/";
+    public static String API_CONFIG_BASE_URL = "http://188.166.251.228/";
     public static String API_CONFIG_URL = API_CONFIG_BASE_URL + "hdv.php";
 
     public static String HOME_PAGE_URL = "/movie/homepage";

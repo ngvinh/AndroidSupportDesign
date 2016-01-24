@@ -24,7 +24,7 @@ public class MenuSliding extends MySlidingLayer{
         lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
         addView(searchView);
         setCloseOnTapEnabled(true);
-//        setLayoutParams(lp);
+        setLayoutParams(lp);
         setSlidingEnabled(true);
         ButterKnife.bind(this, searchView);
     }
