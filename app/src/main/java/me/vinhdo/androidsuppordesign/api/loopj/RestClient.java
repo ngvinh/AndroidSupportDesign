@@ -52,6 +52,7 @@ public class RestClient {
         RequestParams params = new RequestParams();
         params.add(ApiConfig.PARAM_MOVIE_ID, String.valueOf(id));
         params.add("width", "1920");
+        if(AppApplication.getHdvConfig() != null)
         params.add(ApiConfig.PARAM_SIGN, AppApplication.getHdvConfig().getSign());
         params.add(ApiConfig.PARAM_TOKEN, AppApplication.getToken());
         LoopjRestClient.get(ApiConfig.getVideoDetailUrl() ,params, responseHandler);

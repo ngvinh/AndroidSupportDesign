@@ -335,7 +335,8 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
                 } catch (NumberFormatException ex) {
                     mQualityBtn.setBackgroundResource(R.drawable.ic_hd_disable);
                 }
-                playMovieQuality(listR.get(mCurrentQuality).url);
+//                playMovieQuality(listR.get(mCurrentQuality).url);
+                playMovieQuality(mMoviePlay.getLinkPlay());
             }
         }
     }
@@ -703,7 +704,7 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
             String line;
             Resolution resolutionModel = null;
             while ((line = r.readLine()) != null) {
-                if (line.startsWith("#EXT-X-STREAM")) { //start of m3u8
+                if (line.startsWith("#EXT-X-STREAM") || line.startsWith("#EXTM3U")) { //start of m3u8
 
                     resolutionModel = new Resolution();
                     final Pattern pattern = Pattern.compile("#EXT-X-STREAM-INF:.*BANDWIDTH=(\\d+).*RESOLUTION=([\\dx]+).*x([\\dx]+).*");
@@ -718,7 +719,10 @@ public class PlayerActivity extends BaseActivty implements LoadSubListener {
                     }
                     resolutionModel.bandwidth = bandwidth;
                     resolutionModel.name = resolution;
-                } else if (line.startsWith("http")) { //once found EXTINFO use runner to get the next line which contains the media file, parse duration of the segment
+                } else if (line.startsWith("http") || line.endsWith("u8")) { //once found EXTINFO use runner to get the next line which contains the media file, parse duration of the segment
+                    if(!line.startsWith("http")){
+                        line += "";
+                    }
                     resolutionModel.url = line;
                     resolutionArrayList.add(resolutionModel);
                 }
